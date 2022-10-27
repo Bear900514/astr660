@@ -1,0 +1,23 @@
+D=np.loadtxt('C:/Users/Bear/OneDrive/文件/程式/angry.txt')
+E=np.loadtxt('C:/Users/Bear/OneDrive/文件/程式/angry2.txt')
+#vx=15
+#vy=15*(2**(1/2))
+X=[]
+Y=[]
+for i in range(80):
+    t=i/10
+    x=15*t
+    y=15*(2**(1/2))*t-(1/2)*9.8*t**2
+    X.append(x)
+    Y.append(y)
+plt.plot(X,Y,'g',label='analytical')
+plt.plot(D[:,1],D[:,2],'r',label='Rk2') 
+plt.plot(E[:,1],E[:,2],'b',label='Euler') 
+plt.xlabel('X(m)')
+plt.ylabel('Y(m)')
+plt.ylim([-5,50])
+#plt.rcParams['figure.figsize'] = [15,5]
+plt.legend()
+plt.title('angry bird X-Y')
+plt.savefig('fly.png')
+plt.show()
