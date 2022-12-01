@@ -2,27 +2,28 @@ module Solver
 
     implicit none
     contains
-    subroutine bisection(func, xs, err)
-        implicit none
-        real, external    :: func    ! the function to solve
-        real, intent(out) :: xs      ! solution
-        real, intent(out) :: err     ! error
-        real, save :: a = -5.0        ! bracking interval [a,b]
-        real, save :: b = 0.0        ! bracking interval [a,b]
-        real  :: fa, fx              ! f(a) and f(x)
 
-        xs= (a+b)/2
-        fa=func(a)
-        fx=func(xs)
-        err= abs(func(xs))
-        if(sign(1.,fx)/=sign(1.,fa)) then
-            b=xs
-        else
-            a=xs
-        endif
-        return
+    subroutine euler(n, yin, ynext, t, h, func)
+        implicit none
+        integer, intent(in) :: n      ! number of ODEs
+        real, intent(in)    :: t, h
+        real, dimension(n), intent(in)  :: yin
+        real, dimension(n), intent(out)  :: ynext
+        external      :: func
+        integer            :: i
+        real, dimension(n) :: k1
+
+        ! call func to obtain the values of dydt
+        call func(n,t,yin,k1)
         
-        end subroutine bisection
+        ynext(1) = yin(1) + k1(1)*h
+        ynext(2) = yin(2) + k1(2)*h
+        ynext(3) = yin(3) + k1(3)*h
+        ynext(4) = yin(4) + k1(4)*h
+
+        ! compute ynext using the Euler's method
+
+    end subroutine euler
 
     subroutine rk2(n, yin, ynext, t, h, func)
         implicit none
@@ -48,6 +49,7 @@ module Solver
             ynext(i)=yin(i)+h*(k1(i)+k2(i))/2.0
          enddo
     end subroutine rk2
+
     subroutine rk4(n, yin, ynext, t, h, func)
         implicit none
         integer, intent(in) :: n      ! number of ODEs
@@ -55,6 +57,7 @@ module Solver
         real, dimension(n), intent(in)  :: yin
         real, dimension(n), intent(out)  :: ynext
         external      :: func
+
         integer :: i
         real              :: h2
         real,dimension(n) :: k1,k2,k3,k4
@@ -82,8 +85,7 @@ module Solver
         call func(n,t+h,y4,k4)
         ! compute ynext 
          do i=1,n
-            ynext(i)=yin(i)+h*(k1(i)+2*k2(i)+2*k3(i)+k4(i))/6.0
+            ynext(i)=yin(i)+h*(k1(i)+2.0*k2(i)+2.0*k3(i)+k4(i))/6.0
          enddo
     end subroutine rk4
-
 end module Solver
